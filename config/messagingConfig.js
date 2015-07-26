@@ -5,7 +5,7 @@ var messagingConfig = {
 	ROUTING_KEY: "HN_STORIES_KEY",
 	connectionProps: { 
 		host: 'localhost', 
-		port: 15672,
+		port: 5672,
 		login: 'guest',
 		password: 'guest', 
 		connectionTimeout: 10000, 

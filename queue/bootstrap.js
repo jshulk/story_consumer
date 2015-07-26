@@ -7,7 +7,7 @@ exports.init = function(){
 	var deferred = Q.defer(),
 		tasks = [
 			createConnection,
-			createQueue
+			configureQueue
 		];
 
 	async.waterfall(tasks, function(err,results){
@@ -27,12 +27,13 @@ function createConnection(callback){
 		callback(null ,connection);
 	})
 	.catch(function(){
+		console.log("connection failure");
 		callback({msg: "Could not establish connection"}, null);
 	});
 }
 
-function createQueue(connection, callback){
-	queue.create()
+function configureQueue(connection, callback){
+	queue.configure(connection)
 	.then(function(queue){
 		callback(null, queue);
 	})
