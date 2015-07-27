@@ -1,5 +1,5 @@
 
 exports.consume = function(message){
 	console.log("Received");
-	console.log(message);
+	console.log(message.data.toString('utf8'));
 }
