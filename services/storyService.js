@@ -33,7 +33,23 @@ module.exports = {
 		});
 		return deferred.promise;
 	},
-	isAvailable: function(){
-		
+	isAvailable: function(id){
+		var deferred = Q.defer();
+		var dbConn = db.get();
+		var collectionName = "stories";
+		var collection = dbConn.collection(collectionName);
+		collection.find({id: id}).nextObject(function(err, doc){
+			if( err || !doc ){
+				deferred.reject(false);
+			}
+			else if( doc ){
+				deferred.resolve(true);
+			}	
+
+		});
+
+		return deferred.promise;
+
+
 	}
 }
