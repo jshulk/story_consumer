@@ -23,6 +23,10 @@ var messagingConfig = {
 	queueProps: {
 		durable: true,
 		autoDelete: false
+	},
+	publishProps: {
+		contentType: "application/json",
+		contentEncoding: "utf-8"
 	}
 };
 

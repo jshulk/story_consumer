@@ -1,11 +1,13 @@
 var async = require("async"),
 	Q = require("q"),
+	db = require("../db");
 	connection = require("./connection"),
 	queue = require("./storyQueue");
 
 exports.init = function(){
 	var deferred = Q.defer(),
 		tasks = [
+			createDbConnection,
 			createConnection,
 			configureQueue
 		];
@@ -21,7 +23,17 @@ exports.init = function(){
 	return deferred.promise;
 }
 
-function createConnection(callback){
+function createDbConnection(callback){
+	db.create()
+	.then(function(conn){
+		callback(null, conn);
+	})
+	.catch(function(){
+		callback({msg: "could not connect to db"}, null);
+	});
+}
+
+function createConnection(dbConn, callback){
 	connection.create()
 	.then(function(connection){
 		callback(null ,connection);
