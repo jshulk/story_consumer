@@ -2,12 +2,13 @@ var db = require("../db"),
 	Q = require("q");
 
 module.exports = {
+	
 	saveStoryIds: function(data){
-		var deferred = Q.defer();
-		//data.type and data.ids
-		var dbConn = db.get();
-		var collectionName = "story_ids";
-		var collection = dbConn.collection(collectionName);
+		var deferred = Q.defer(),
+			dbConn = db.get(),
+			collectionName = "story_ids",
+			collection = dbConn.collection(collectionName);
+
 		collection.insert(data, function(err, results){
 			if( err ){
 				deferred.reject(err);
@@ -20,10 +21,11 @@ module.exports = {
 
 	},
 	saveStory: function(data){
-		var deferred = Q.defer();
-		var dbConn = db.get();
-		var collectionName = "stories";
-		var collection = dbConn.collection(collectionName);
+		var deferred = Q.defer(),
+			dbConn = db.get(),
+			collectionName = "stories",
+			collection = dbConn.collection(collectionName);
+
 		collection.insert(data, function(err, results){
 			if( err ){
 				deferred.reject(err);
@@ -35,9 +37,10 @@ module.exports = {
 	},
 	isAvailable: function(id){
 		var deferred = Q.defer();
-		var dbConn = db.get();
-		var collectionName = "stories";
-		var collection = dbConn.collection(collectionName);
+			dbConn = db.get(),
+			collectionName = "stories",
+			collection = dbConn.collection(collectionName);
+			
 		collection.find({id: id}).nextObject(function(err, doc){
 			if( err || !doc ){
 				deferred.reject(false);

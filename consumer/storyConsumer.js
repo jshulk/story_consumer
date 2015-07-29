@@ -5,8 +5,9 @@ var config = require("../config/messagingConfig"),
 	async = require("async");
 
 exports.consume = function(message){
-	var data = message.data.toString(config.publishProps.contentEncoding);
-	var parsedData = JSON.parse(data)
+	var data = message.data.toString(config.publishProps.contentEncoding),
+		parsedData = JSON.parse(data);
+
 	if( parsedData && !_.isEmpty(parsedData)){
 
 		if( parsedData.type ){
@@ -22,25 +23,33 @@ exports.consume = function(message){
 function processStoryId(data){
 	//check if present in database
 	var tasks = [
+		async.constant(data.id),
+		isAvailable,
 		fetchStory,
 		saveStory
 	];
-
-	var isAvailable = storyService.isAvailable(data.id);
-	if(! isAvailable ){
-
-		async.waterfall(tasks.unshift(async.constant(data.id)), function(err, results){
+		async.waterfall(tasks, function(err, results){
 			if( err ){
 				console.log("error occurred while processing story Id");
 			} else {
 				console.log("story processed successfully");
 			}
 		}); 		
-	}
+	
 
 }
 
-function fetchStory(storyId, callback){
+function isAvailable(storyId, callback){
+	storyService.isAvailable(storyId)
+	.then(function(response){
+		callback(null, true, storyId);
+	})
+	.catch(function(response){
+		callback({msg: "not available"}, null)
+	});
+}
+
+function fetchStory(isAvailable, storyId, callback){
 	webApi.fetchItem(storyId);
 	.then(function(data){
 		callback(null, data);
