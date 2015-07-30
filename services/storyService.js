@@ -9,13 +9,23 @@ module.exports = {
 			collectionName = "story_ids",
 			collection = dbConn.collection(collectionName);
 
-		collection.insert(data, function(err, results){
-			if( err ){
-				deferred.reject(err);
-			} else {
-				deferred.resolve(results);
-			}
-		});
+			collection.updateOn(
+				{type: "TOP_STORIES"},
+				{$set: {ids: data.ids}},
+				{upsert: true}, function(err, results){
+					if( err ){
+						deferred.reject(err);
+					} else {	
+						deferred.resolve(results);
+					}
+			});
+		// collection.insert(data, function(err, results){
+		// 	if( err ){
+		// 		deferred.reject(err);
+		// 	} else {
+		// 		deferred.resolve(results);
+		// 	}
+		// });
 
 		return deferred.promise;
 
@@ -40,12 +50,11 @@ module.exports = {
 			dbConn = db.get(),
 			collectionName = "stories",
 			collection = dbConn.collection(collectionName);
-			
+
 		collection.find({id: id}).nextObject(function(err, doc){
-			if( err || !doc ){
+			if( err || doc ){
 				deferred.reject(false);
-			}
-			else if( doc ){
+			} else if(!doc){
 				deferred.resolve(true);
 			}	
 

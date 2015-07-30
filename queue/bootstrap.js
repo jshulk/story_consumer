@@ -39,7 +39,6 @@ function createConnection(dbConn, callback){
 		callback(null ,connection);
 	})
 	.catch(function(){
-		console.log("connection failure");
 		callback({msg: "Could not establish connection"}, null);
 	});
 }

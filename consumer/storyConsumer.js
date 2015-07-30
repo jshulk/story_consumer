@@ -5,8 +5,8 @@ var config = require("../config/messagingConfig"),
 	async = require("async");
 
 exports.consume = function(message){
-	var data = message.data.toString(config.publishProps.contentEncoding),
-		parsedData = JSON.parse(data);
+	console.log("consume called");
+	var parsedData = message;
 
 	if( parsedData && !_.isEmpty(parsedData)){
 
@@ -30,7 +30,7 @@ function processStoryId(data){
 	];
 		async.waterfall(tasks, function(err, results){
 			if( err ){
-				console.log("error occurred while processing story Id");
+				console.log("error occurred while processing story Id " + data.id);
 			} else {
 				console.log("story processed successfully");
 			}
@@ -50,11 +50,13 @@ function isAvailable(storyId, callback){
 }
 
 function fetchStory(isAvailable, storyId, callback){
-	webApi.fetchItem(storyId);
+	webApi.fetchItem(storyId)
 	.then(function(data){
 		callback(null, data);
 	})
-	.catch(function(){
+	.catch(function(err){
+		console.log("error while fetching stories");
+		console.log(err);
 		callback({msg: "Error occurred while fetching the story"}, null);
 	});
 }

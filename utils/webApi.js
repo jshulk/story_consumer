@@ -7,7 +7,7 @@ exports.fetchItem = function(storyId){
  request(appConstants.ITEM_BASE_URL + storyId + ".json")
  .end(function(err, response){
  	if( err ){
- 		deferred.reject(response);
+ 		deferred.reject(err);
  	} else {
  		deferred.resolve(response.body);
  	}
