@@ -1,27 +1,43 @@
 var config = require("../config/messagingConfig"),
 	_ = require("lodash"),
+	Q = require('q'),
 	storyService = require("../services/storyService"),
 	webApi = require("../utils/webApi"),
 	async = require("async");
 
-exports.consume = function(message){
+exports.consume = function(message, headers, deliveryInfo, messageObject){
 	console.log("consume called");
 	var parsedData = message;
 
 	if( parsedData && !_.isEmpty(parsedData)){
 
 		if( parsedData.type ){
-			storyService.saveStoryIds(parsedData);
+			storyService.saveStoryIds(parsedData)
+			.then(function(){
+				messageObject.acknowledge();
+			})
+			.catch(function(){
+				messageObject.acknowledge(false);
+			});
+			
 		} else {
-			processStoryId(parsedData);
+			processStoryId(parsedData)
+			.then(function(){
+				messageObject.acknowledge();
+			})
+			.catch(function(){
+				messageObject.acknowledge(false);
+			})
 		}
 	}
 	console.log("Received");
 
 }
 
+
+
 function processStoryId(data){
-	//check if present in database
+	var deferred = Q.defer();
 	var tasks = [
 		async.constant(data.id),
 		isAvailable,
@@ -31,10 +47,14 @@ function processStoryId(data){
 		async.waterfall(tasks, function(err, results){
 			if( err ){
 				console.log("error occurred while processing story Id " + data.id);
+				deferred.reject(err);
 			} else {
 				console.log("story processed successfully");
+				deferred.resolve(results);
 			}
 		}); 		
+		
+	return deferred.promise;
 	
 
 }

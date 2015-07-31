@@ -19,14 +19,6 @@ module.exports = {
 						deferred.resolve(results);
 					}
 			});
-		// collection.insert(data, function(err, results){
-		// 	if( err ){
-		// 		deferred.reject(err);
-		// 	} else {
-		// 		deferred.resolve(results);
-		// 	}
-		// });
-
 		return deferred.promise;
 
 	},

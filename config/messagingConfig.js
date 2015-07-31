@@ -27,6 +27,10 @@ var messagingConfig = {
 	publishProps: {
 		contentType: "application/json",
 		contentEncoding: "utf-8"
+	},
+	subscriptionProps: {
+		ack: true,
+		prefetchCount: 1
 	}
 };
 
