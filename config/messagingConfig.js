@@ -29,8 +29,7 @@ var messagingConfig = {
 		contentEncoding: "utf-8"
 	},
 	subscriptionProps: {
-		ack: true,
-		prefetchCount: 1
+		ack: true
 	}
 };
 

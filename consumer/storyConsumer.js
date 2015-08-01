@@ -3,10 +3,12 @@ var config = require("../config/messagingConfig"),
 	Q = require('q'),
 	storyService = require("../services/storyService"),
 	webApi = require("../utils/webApi"),
-	async = require("async");
+	async = require("async"),
+	storyQueue = require("../queue/storyQueue");
 
-exports.consume = function(message, headers, deliveryInfo, messageObject){
+exports.consume = function(message){
 	console.log("consume called");
+	var queue = storyQueue.get();
 	var parsedData = message;
 
 	if( parsedData && !_.isEmpty(parsedData)){
@@ -14,7 +16,9 @@ exports.consume = function(message, headers, deliveryInfo, messageObject){
 		if( parsedData.type ){
 			storyService.saveStoryIds(parsedData)
 			.then(function(){
-				messageObject.acknowledge();
+				console.log("message acknowledged");
+				//messageObject.acknowledge(true);
+				queue.shift();
 			})
 			.catch(function(){
 				messageObject.acknowledge(false);
@@ -23,7 +27,9 @@ exports.consume = function(message, headers, deliveryInfo, messageObject){
 		} else {
 			processStoryId(parsedData)
 			.then(function(){
-				messageObject.acknowledge();
+				console.log("message acknowledged");
+				queue.shift();
+				messageObject.acknowledge(true);
 			})
 			.catch(function(){
 				messageObject.acknowledge(false);

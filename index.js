@@ -4,7 +4,7 @@ var bootstrap = require("./queue/bootstrap"),
 	
 bootstrap.init()
 .then(function(queue){
-	queue.subscribe(config.subscriptionProps, storyConsumer.consume);
+	queue.subscribe(storyConsumer.consume);
 })
 .catch(function(err){
 	console.log(err.msg);
