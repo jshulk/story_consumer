@@ -3,8 +3,8 @@ var bootstrap = require("./queue/bootstrap"),
 	storyConsumer = require("./consumer/storyConsumer");
 	
 bootstrap.init()
-.then(function(queue){
-	queue.subscribe(config.subscriptionProps, storyConsumer.consume);
+.then(function(channel){
+	channel.consume(config.STORY_QUEUE, storyConsumer.consume);
 })
 .catch(function(err){
 	console.log(err.msg);

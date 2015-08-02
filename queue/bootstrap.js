@@ -2,6 +2,8 @@ var async = require("async"),
 	Q = require("q"),
 	db = require("../db");
 	connection = require("./connection"),
+	consumerChannel = require("../channels/consumerChannel"),
+	config  = require("../config/messagingConfig"),
 	queue = require("./storyQueue");
 
 exports.init = function(){
@@ -9,7 +11,10 @@ exports.init = function(){
 		tasks = [
 			createDbConnection,
 			createConnection,
-			configureQueue
+			createChannel,
+			configureChannel,
+			configureQueue,
+			bindQueue
 		];
 
 	async.waterfall(tasks, function(err,results){
@@ -43,13 +48,42 @@ function createConnection(dbConn, callback){
 	});
 }
 
-function configureQueue(connection, callback){
-	queue.configure(connection)
-	.then(function(queue){
-		callback(null, queue);
+function configureQueue(channel, callback){
+	queue.configure(channel)
+	.then(function(){
+		callback(null, channel);
 	})
 	.catch(function(){
 		callback({msg: "Could not create queue"}, null);
 	});
 }
 
+function createChannel(connection, callback){
+	consumerChannel.create(connection)
+	.then(function(chan){
+		callback(null, chan)
+	})
+	.catch(function(err){
+		callback(err, null);
+	});
+}
+
+function configureChannel(channel, callback){
+	channel.prefetch(config.channelProps.prefetchCount)
+	.then(function(){
+		callback(null, channel);
+	})
+	.catch(function(err){
+		callback(err, null);
+	});
+}
+
+function bindQueue(channel, callback){
+	channel.bindQueue(config.STORY_QUEUE, config.STORY_EXCHANGE, config.ROUTING_KEY)
+	.then(function(){
+		callback(null, channel);
+	})
+	.catch(function(err){
+		callback(err, null);
+	})
+}

@@ -3,13 +3,13 @@ var config = require("../config/messagingConfig"),
 	Q = require('q'),
 	storyService = require("../services/storyService"),
 	webApi = require("../utils/webApi"),
-	async = require("async"),
-	storyQueue = require("../queue/storyQueue");
+	channel = require("../channels/consumerChannel"),
+	async = require("async");
 
 exports.consume = function(message){
 	console.log("consume called");
-	var queue = storyQueue.get();
 	var parsedData = message;
+	var chan = channel.get();
 
 	if( parsedData && !_.isEmpty(parsedData)){
 
@@ -18,21 +18,20 @@ exports.consume = function(message){
 			.then(function(){
 				console.log("message acknowledged");
 				//messageObject.acknowledge(true);
-				queue.shift();
+				chan.ack(message);
 			})
 			.catch(function(){
-				messageObject.acknowledge(false);
+				chan.nack(message);
 			});
 			
 		} else {
 			processStoryId(parsedData)
 			.then(function(){
 				console.log("message acknowledged");
-				queue.shift();
-				messageObject.acknowledge(true);
+				chan.ack(message);
 			})
 			.catch(function(){
-				messageObject.acknowledge(false);
+				chan.nack(message);
 			})
 		}
 	}
