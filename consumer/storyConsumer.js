@@ -3,13 +3,11 @@ var config = require("../config/messagingConfig"),
 	Q = require('q'),
 	storyService = require("../services/storyService"),
 	webApi = require("../utils/webApi"),
-	channel = require("../channels/consumerChannel"),
 	async = require("async");
 
-exports.consume = function(message){
+exports.consume = function(channel, message){
 	console.log("consume called");
 	var parsedData = message;
-	var chan = channel.get();
 
 	if( parsedData && !_.isEmpty(parsedData)){
 
@@ -17,21 +15,20 @@ exports.consume = function(message){
 			storyService.saveStoryIds(parsedData)
 			.then(function(){
 				console.log("message acknowledged");
-				//messageObject.acknowledge(true);
-				chan.ack(message);
+				channel.ack(message);
 			})
 			.catch(function(){
-				chan.nack(message);
+				channel.nack(message);
 			});
 			
 		} else {
 			processStoryId(parsedData)
 			.then(function(){
 				console.log("message acknowledged");
-				chan.ack(message);
+				channel.ack(message);
 			})
 			.catch(function(){
-				chan.nack(message);
+				channel.nack(message);
 			})
 		}
 	}
