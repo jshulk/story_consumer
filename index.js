@@ -4,6 +4,7 @@ var bootstrap = require("./queue/bootstrap"),
 	
 bootstrap.init()
 .then(function(channel){
+	console.log("consumer configured");
 	channel.consume(config.STORY_QUEUE, storyConsumer.consume);
 })
 .catch(function(err){

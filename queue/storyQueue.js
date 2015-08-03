@@ -14,7 +14,7 @@ exports.configure = function(channel){
 		queue = storyQueue;
 		deferred.resolve(storyQueue);
 	})
-	catch(function(err){
+	.catch(function(err){
 		deferred.reject(err);
 	});
 
