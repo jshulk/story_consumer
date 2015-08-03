@@ -7,7 +7,9 @@ var config = require("../config/messagingConfig"),
 
 exports.consume = function(channel, message){
 	console.log("consume called");
-	var parsedData = message;
+	var parsedData = JSON.parse(message.content.toString());
+	console.log('received message');
+	console.log(parsedData);
 
 	if( parsedData && !_.isEmpty(parsedData)){
 
