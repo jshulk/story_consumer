@@ -29,8 +29,13 @@ exports.consume = function(channel, message){
 				console.log("message acknowledged");
 				channel.ack(message);
 			})
-			.catch(function(){
-				channel.nack(message);
+			.catch(function(error){
+				if(error.code && error.code == "ALREADY_PRESENT"){
+					channel.ack(message);
+				} else {
+					channel.nack(message);	
+				}
+				
 			})
 		}
 	}
@@ -66,10 +71,10 @@ function processStoryId(data){
 function isAvailable(storyId, callback){
 	storyService.isAvailable(storyId)
 	.then(function(response){
-		callback(null, true, storyId);
+		callback(null, response, storyId);
 	})
-	.catch(function(response){
-		callback({msg: "not available"}, null)
+	.catch(function(error){
+		callback(error, null);
 	});
 }
 

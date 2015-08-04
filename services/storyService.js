@@ -9,7 +9,7 @@ module.exports = {
 			collectionName = "story_ids",
 			collection = dbConn.collection(collectionName);
 
-			collection.updateOn(
+			collection.updateOne(
 				{type: "TOP_STORIES"},
 				{$set: {ids: data.ids}},
 				{upsert: true}, function(err, results){
@@ -44,8 +44,10 @@ module.exports = {
 			collection = dbConn.collection(collectionName);
 
 		collection.find({id: id}).nextObject(function(err, doc){
-			if( err || doc ){
+			if( err  ){
 				deferred.reject(false);
+			} else if( doc ){
+				deferred.reject({code: "ALREADY_PRESENT"});
 			} else if(!doc){
 				deferred.resolve(true);
 			}	
